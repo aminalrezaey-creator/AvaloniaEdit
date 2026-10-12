@@ -228,9 +228,9 @@ namespace AvaloniaEdit.Rendering
 					lastRect = new Rect(pos, y, textView.EmptyLineSelectionWidth, lineHeight);
 				} else {
 					if (segmentStartVcInLine <= visualEndCol) {
-						foreach (var b in line.GetTextBounds(segmentStartVcInLine, segmentEndVcInLine - segmentStartVcInLine)) {
-							double left = visualLine.FlipX(line, b.Rectangle.Left) - scrollOffset.X; // [vizar-rtl]
-							double right = visualLine.FlipX(line, b.Rectangle.Right) - scrollOffset.X;
+						foreach (var b in visualLine.GetTextBounds(line, segmentStartVcInLine, segmentEndVcInLine - segmentStartVcInLine)) { // [vizar-rtl]
+							double left = visualLine.FlipX(line, b.Left) - scrollOffset.X;
+							double right = visualLine.FlipX(line, b.Right) - scrollOffset.X;
 							if (lastRect != default)
 								yield return lastRect;
 							// left>right is possible in RTL languages

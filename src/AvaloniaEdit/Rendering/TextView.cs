@@ -1204,11 +1204,14 @@ namespace AvaloniaEdit.Rendering
                                 Debug.Assert(_inlineObjects.Contains(inline));
 
                                 var desiredSize = inline.Element.DesiredSize;
-                                var x = pos.X + textLine.GetDistanceFromCharacterHit(new CharacterHit(offset));
-                                if (visualLine.IsRightToLeft) // [vizar-rtl]
-                                    x = pos.X + textLine.WidthIncludingTrailingWhitespace - (x - pos.X);
-                                var y = pos.Y;
                                 var width = desiredSize.Width;
+                                var x = pos.X + textLine.GetDistanceFromCharacterHit(new CharacterHit(offset));
+                                if (visualLine.IsRightToLeft) // [vizar-rtl] left edge in the mirrored view = flipped right edge
+                                {
+                                    var bounds = visualLine.GetTextBounds(textLine, offset, span.Length);
+                                    x = pos.X + (bounds.Count > 0 ? visualLine.FlipX(textLine, bounds[0].Right) : 0);
+                                }
+                                var y = pos.Y;
                                 var height = Math.Max(desiredSize.Height, defaultLineHeight);
                                 inline.Element.Arrange(new Rect(x, y, width, height));
                             }

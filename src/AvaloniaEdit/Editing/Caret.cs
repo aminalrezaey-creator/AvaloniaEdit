@@ -417,8 +417,7 @@ namespace AvaloniaEdit.Editing
 			if (currentPos < visualLine.VisualLength) {
 				// If the caret is within the text, use GetTextBounds() for the text being overwritten.
 				// This is necessary to ensure the rectangle is calculated correctly in bidirectional text.
-				var textBounds = textLine.GetTextBounds(currentPos, nextPos - currentPos)[0];
-				r = textBounds.Rectangle;
+				r = visualLine.GetTextBounds(textLine, currentPos, nextPos - currentPos)[0]; // [vizar-rtl]
 				if (visualLine.IsRightToLeft) // [vizar-rtl]
 					r = r.WithX(visualLine.FlipX(textLine, r.Right));
 				var y = r.Y + visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineTop);

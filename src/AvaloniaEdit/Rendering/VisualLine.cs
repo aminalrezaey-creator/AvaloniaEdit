@@ -486,7 +486,7 @@ namespace AvaloniaEdit.Rendering
             if (textLine == null)
                 throw new ArgumentNullException(nameof(textLine));
 
-            var xPos = FlipX(textLine, textLine.GetDistanceFromCharacterHit(new CharacterHit(Math.Min(visualColumn,
+            var xPos = FlipX(textLine, GetDistanceFromCharacterHit(textLine, new CharacterHit(Math.Min(visualColumn,
                 VisualLengthWithEndOfLineMarker))));
 
             if (visualColumn > VisualLengthWithEndOfLineMarker)
@@ -539,6 +539,31 @@ namespace AvaloniaEdit.Rendering
             return IsRightToLeft ? textLine.WidthIncludingTrailingWhitespace - x : x;
         }
 
+        /// <summary>
+        /// [vizar-rtl] Text bounds of [firstIndex, firstIndex + length) in TextLine layout space. In RTL mode this uses
+        /// <see cref="RtlTextLineMetrics"/> (Avalonia 12 RTL hit-testing is unreliable), else <see cref="TextLine.GetTextBounds"/>.
+        /// </summary>
+        public IReadOnlyList<Rect> GetTextBounds(TextLine textLine, int firstIndex, int length)
+        {
+            if (textLine == null)
+                throw new ArgumentNullException(nameof(textLine));
+            if (IsRightToLeft)
+                return RtlTextLineMetrics.Get(textLine).GetTextBounds(firstIndex, length, textLine.Height);
+            return textLine.GetTextBounds(firstIndex, length).Select(b => b.Rectangle).ToList();
+        }
+
+        /// <summary>[vizar-rtl] <see cref="TextLine.GetDistanceFromCharacterHit"/>, RTL-safe (layout space).</summary>
+        public double GetDistanceFromCharacterHit(TextLine textLine, CharacterHit hit)
+        {
+            return IsRightToLeft ? RtlTextLineMetrics.Get(textLine).GetDistanceFromCharacterHit(hit) : textLine.GetDistanceFromCharacterHit(hit);
+        }
+
+        /// <summary>[vizar-rtl] <see cref="TextLine.GetCharacterHitFromDistance"/>, RTL-safe (layout space).</summary>
+        public CharacterHit GetCharacterHitFromDistance(TextLine textLine, double distance)
+        {
+            return IsRightToLeft ? RtlTextLineMetrics.Get(textLine).GetCharacterHitFromDistance(distance) : textLine.GetCharacterHitFromDistance(distance);
+        }
+
         public int GetVisualColumn(TextLine textLine, double xPos, bool allowVirtualSpace)
         {
             if (xPos > textLine.WidthIncludingTrailingWhitespace)
@@ -550,7 +575,7 @@ namespace AvaloniaEdit.Rendering
                 }
             }
 
-            var ch = textLine.GetCharacterHitFromDistance(FlipX(textLine, xPos));
+            var ch = GetCharacterHitFromDistance(textLine, FlipX(textLine, xPos));
 
             return ch.FirstCharacterIndex + ch.TrailingLength;
         }
@@ -625,7 +650,7 @@ namespace AvaloniaEdit.Rendering
 
             isAtEndOfLine = false;
 
-            var ch = textLine.GetCharacterHitFromDistance(FlipX(textLine, point.X));
+            var ch = GetCharacterHitFromDistance(textLine, FlipX(textLine, point.X));
 
             return ch.FirstCharacterIndex;
         }
