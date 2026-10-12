@@ -180,6 +180,11 @@ namespace AvaloniaEdit
         protected virtual void OnOptionChanged(PropertyChangedEventArgs e)
         {
             OptionChanged?.Invoke(this, e);
+
+            // [vizar-rtl] keep Avalonia's control mirroring in sync with the RTL layout option
+            if (Options != null && (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(TextEditorOptions.RightToLeft))
+                && (Options.RightToLeft || FlowDirection == FlowDirection.RightToLeft))
+                FlowDirection = Options.RightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         }
 
         private static void OnOptionsChanged(AvaloniaPropertyChangedEventArgs e)

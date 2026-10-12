@@ -486,8 +486,8 @@ namespace AvaloniaEdit.Rendering
             if (textLine == null)
                 throw new ArgumentNullException(nameof(textLine));
 
-            var xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(Math.Min(visualColumn,
-                VisualLengthWithEndOfLineMarker)));
+            var xPos = FlipX(textLine, textLine.GetDistanceFromCharacterHit(new CharacterHit(Math.Min(visualColumn,
+                VisualLengthWithEndOfLineMarker))));
 
             if (visualColumn > VisualLengthWithEndOfLineMarker)
             {
@@ -527,6 +527,18 @@ namespace AvaloniaEdit.Rendering
         /// Gets the visual column from a document position (relative to top left of the document).
         /// If the user clicks between two visual columns, rounds to the nearest column.
         /// </summary>
+        /// <summary>[vizar-rtl] True when lines are laid out right-to-left (TextEditorOptions.RightToLeft).</summary>
+        public bool IsRightToLeft => TextView?.Options?.RightToLeft == true;
+
+        /// <summary>
+        /// [vizar-rtl] Converts between TextLine x (layout space) and view x. In RTL mode the view is mirrored by
+        /// Avalonia (FlowDirection), so x is flipped per line; the conversion is its own inverse.
+        /// </summary>
+        public double FlipX(TextLine textLine, double x)
+        {
+            return IsRightToLeft ? textLine.WidthIncludingTrailingWhitespace - x : x;
+        }
+
         public int GetVisualColumn(TextLine textLine, double xPos, bool allowVirtualSpace)
         {
             if (xPos > textLine.WidthIncludingTrailingWhitespace)
@@ -538,7 +550,7 @@ namespace AvaloniaEdit.Rendering
                 }
             }
 
-            var ch = textLine.GetCharacterHitFromDistance(xPos);
+            var ch = textLine.GetCharacterHitFromDistance(FlipX(textLine, xPos));
 
             return ch.FirstCharacterIndex + ch.TrailingLength;
         }
@@ -613,7 +625,7 @@ namespace AvaloniaEdit.Rendering
 
             isAtEndOfLine = false;
 
-            var ch = textLine.GetCharacterHitFromDistance(point.X);
+            var ch = textLine.GetCharacterHitFromDistance(FlipX(textLine, point.X));
 
             return ch.FirstCharacterIndex;
         }
@@ -832,7 +844,14 @@ namespace AvaloniaEdit.Rendering
                 double textHeight = textLine.Height;
                 double lineHeight = Math.Max(textHeight, defaultLineHeight);
                 double textOffset = (lineHeight - textHeight) / 2;
-                textLine.Draw(context, new Point(0, pos + textOffset));
+                if (VisualLine.IsRightToLeft)
+                {
+                    // [vizar-rtl] undo Avalonia's mirror for glyphs and right-align the line
+                    using (context.PushTransform(new Matrix(-1, 0, 0, 1, textLine.WidthIncludingTrailingWhitespace, 0)))
+                        textLine.Draw(context, new Point(0, pos + textOffset));
+                }
+                else
+                    textLine.Draw(context, new Point(0, pos + textOffset));
                 pos += lineHeight;
             }
         }

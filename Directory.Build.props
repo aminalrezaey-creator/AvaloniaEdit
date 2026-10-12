@@ -27,5 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+    <!-- [vizar-rtl] build-only SourceLink dependency; advisory would fail the build under TreatWarningsAsErrors -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-23fw-v26w-5fgq" />
   </ItemGroup>
 </Project>

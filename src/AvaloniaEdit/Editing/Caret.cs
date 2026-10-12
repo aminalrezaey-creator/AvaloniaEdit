@@ -419,6 +419,8 @@ namespace AvaloniaEdit.Editing
 				// This is necessary to ensure the rectangle is calculated correctly in bidirectional text.
 				var textBounds = textLine.GetTextBounds(currentPos, nextPos - currentPos)[0];
 				r = textBounds.Rectangle;
+				if (visualLine.IsRightToLeft) // [vizar-rtl]
+					r = r.WithX(visualLine.FlipX(textLine, r.Right));
 				var y = r.Y + visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineTop);
 				r = r.WithY(y);
 			} else {

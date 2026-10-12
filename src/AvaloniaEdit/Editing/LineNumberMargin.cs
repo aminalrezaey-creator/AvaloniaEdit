@@ -109,7 +109,14 @@ namespace AvaloniaEdit.Editing
 						Typeface, EmSize, foreground
 					);
 					var y = line.GetTextLineVisualYPosition(line.TextLines[0], VisualYPosition.TextTop);
-					drawingContext.DrawText(text, new Point(renderSize.Width - text.Width, y - textView.VerticalOffset));
+					var origin = new Point(renderSize.Width - text.Width, y - textView.VerticalOffset);
+					if (textView.Options.RightToLeft) // [vizar-rtl] un-mirror the digits in place
+					{
+						using (drawingContext.PushTransform(new Matrix(-1, 0, 0, 1, 2 * origin.X + text.Width, 0)))
+							drawingContext.DrawText(text, origin);
+					}
+					else
+						drawingContext.DrawText(text, origin);
 				}
 			}
 		}

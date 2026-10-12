@@ -508,6 +508,24 @@ namespace AvaloniaEdit
         } = true;
 
         /// <summary>
+        /// [vizar-rtl] Gets/Sets whether the text view lays out lines right-to-left (right-aligned,
+        /// mirrored caret, hit-testing and selection, gutter on the right). See PATCHES.md.
+        /// </summary>
+        [DefaultValue(false)]
+        public virtual bool RightToLeft
+        {
+            get { return field; }
+            set
+            {
+                if (field != value)
+                {
+                    field = value;
+                    OnPropertyChanged(nameof(RightToLeft));
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets/Sets whether the user can set the caret behind the line ending
         /// (into "virtual space").
         /// Note that virtual space is always used (independent from this setting)

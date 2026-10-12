@@ -1037,7 +1037,8 @@ namespace AvaloniaEdit.Rendering
             {
                 defaultTextRunProperties = defaultTextRunProperties,
                 textWrapping = _canHorizontallyScroll ? TextWrapping.NoWrap : TextWrapping.Wrap,
-                tabSize = Options.IndentationSize * WideSpaceWidth
+                tabSize = Options.IndentationSize * WideSpaceWidth,
+                flowDirection = Options.RightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight // [vizar-rtl]
             };
         }
 
@@ -1204,6 +1205,8 @@ namespace AvaloniaEdit.Rendering
 
                                 var desiredSize = inline.Element.DesiredSize;
                                 var x = pos.X + textLine.GetDistanceFromCharacterHit(new CharacterHit(offset));
+                                if (visualLine.IsRightToLeft) // [vizar-rtl]
+                                    x = pos.X + textLine.WidthIncludingTrailingWhitespace - (x - pos.X);
                                 var y = pos.Y;
                                 var width = desiredSize.Width;
                                 var height = Math.Max(desiredSize.Height, defaultLineHeight);

@@ -32,7 +32,9 @@ namespace AvaloniaEdit.Rendering
 
 		public override double DefaultIncrementalTab => tabSize;
 
-		public override FlowDirection FlowDirection => FlowDirection.LeftToRight;
+		internal FlowDirection flowDirection = FlowDirection.LeftToRight; // [vizar-rtl]
+
+		public override FlowDirection FlowDirection => flowDirection;
 		public override TextAlignment TextAlignment => TextAlignment.Left;
 		public override double LineHeight => double.NaN;
 		public override bool FirstLineInParagraph => firstLineInParagraph;
