@@ -27,6 +27,7 @@ Branch `vizar-rtl`, based on tag `12.0.0` (86fdebe). Used by vizar-ide as the su
 | `Rendering/VisualLine.cs` | `IsRightToLeft`, `FlipX`, RTL-safe `GetTextBounds`/`GetDistanceFromCharacterHit`/`GetCharacterHitFromDistance`; used in `GetTextLineVisualXPosition`, `GetVisualColumn(TextLine,…)`, `GetVisualColumnFloor`; `VisualLineDrawingVisual.Render` draws under a flip transform |
 | `Rendering/BackgroundGeometryBuilder.cs` | `VisualLine.GetTextBounds` rects flipped (selection, squiggles, markers) |
 | `Editing/Caret.cs` | overstrike caret rect via `VisualLine.GetTextBounds`, flipped |
+| `Rendering/Layer.cs` | layers bind `FlowDirection` to the text view: they have no logical parent, so they stayed LTR and Avalonia mirrored each layer again (caret, selection, squiggles and other layer renderers landed far left of the right-aligned text) |
 | `Editing/LineNumberMargin.cs` | digits un-mirrored in place |
 | `Directory.Build.props` | `NuGetAuditSuppress` for GHSA-23fw-v26w-5fgq (build-only SourceLink dep; breaks the build under TreatWarningsAsErrors) |
 

@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 
@@ -37,6 +38,9 @@ namespace AvaloniaEdit.Rendering
 			KnownLayer = knownLayer;
 			Focusable = false;
 		    IsHitTestVisible = false;
+			// [vizar-rtl] layers have no logical parent, so FlowDirection would not inherit from the text view and
+			// Avalonia would mirror each layer (and the line visuals inside the text layer) a second time.
+			Bind(FlowDirectionProperty, textView.GetObservable(FlowDirectionProperty));
 		}
 
 	    public override void Render(DrawingContext context)
